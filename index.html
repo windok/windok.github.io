@@ -1,16 +1,49 @@
-<html>
-<head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-W34XK46');</script>
-<!-- End Google Tag Manager -->
-</head>
-<body>
-  
-  
+<button onClick="checkLoginState()">LOGIN</button>
+<script>
+  function checkLoginState() {
+    FB.getLoginStatus(function (response) {
+      console.log("getLoginStatus", response);
 
-</body
-</html>
+      if (response.status === "connected") {
+        FB.logout();
+      } else {
+        FB.login(function (rs) {
+          console.log("###################");
+          console.log({ rs });
+          console.log("###################");
+
+          fetch(
+            `https://qa-api.dev.ejaza.com/auth/facebook?access_token=${rs.authResponse.accessToken}`
+          ).then(async (user) => {
+            console.log("*******************");
+            console.log({ user });
+            console.log(await user?.json());
+            console.log("*******************");
+          });
+        }, { scope: 'email' });
+      }
+    });
+  }
+
+  window.fbAsyncInit = function () {
+    FB.init({
+      appId: "192072391919028",
+      xfbml: true,
+      version: "v7.0",
+    });
+
+    FB.AppEvents.logPageView();
+  };
+
+  (function (d, s, id) {
+    var js,
+      fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  })(document, "script", "facebook-jssdk");
+</script>
